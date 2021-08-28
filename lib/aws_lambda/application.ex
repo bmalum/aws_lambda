@@ -8,7 +8,7 @@ defmodule AwsLambda.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      AwsLambda.RuntimeLoop
+      {AwsLambda.RuntimeLoop, name: RuntimeLoop}
       # Starts a worker by calling: AwsLambda.Worker.start_link(arg)
       # {AwsLambda.Worker, arg}
     ]

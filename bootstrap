@@ -1,0 +1,6 @@
+#!/bin/sh
+cd $LAMBDA_TASK_ROOT
+pwd
+echo 'Hello World'
+_build/prod/rel/aws_lambda/bin/aws_lambda start
+
