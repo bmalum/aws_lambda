@@ -10,8 +10,7 @@ defmodule AwsLambda.RuntimeLoop do
   end
 
   def start_link(_args) do
-    IO.inspect System.get_env()
-    
+
     Task.start_link(fn -> loop() end)
   end
 
@@ -24,8 +23,10 @@ defmodule AwsLambda.RuntimeLoop do
     case :httpc.request(:get, {url(:next), []}, [{:timeout, :timer.seconds(60)}], []) do
       {:ok, {_proto, headers, payload}} ->
         header_map = for {key, val} <- headers, into: %{}, do: {List.to_string(key), val}
-	
-	data = Kernel.apply(String.to_atom("Elixir" <> System.get_env("_HANDLER")), :handler, [payload, header_map])
+	handler_list =  String.split(System.get_env("_HANDLER"), ".")
+	function =  List.last(handler_list)
+	modules = Enum.drop(handler_list, -1) |> Enum.intersperse(".") |> List.to_string
+	data = Kernel.apply(String.to_atom("Elixir." <> modules), String.to_atom(function), [payload, header_map])
         send_response(header_map["lambda-runtime-aws-request-id"], data)
 
       _ ->
